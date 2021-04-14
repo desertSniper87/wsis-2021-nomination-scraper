@@ -4,7 +4,7 @@ import scrapy
 
 class LawsSpider(scrapy.Spider):
     BASE_URL = 'https://www.itu.int/'
-    name = "nominations2"
+    name = "nominations"
 
     def start_requests(self):
         urls = [ self.BASE_URL + f'net4/wsis/stocktaking/Prizes/2021/Nominated?jts=8S9QLL&idx=11&page={p}' for p in range(1, 19)]
@@ -21,17 +21,22 @@ class LawsSpider(scrapy.Spider):
 
             # print(self.BASE_URL+nomination_link)
 
+
             n = {
                 'cat': category_name,
                 'title': nomination_title,
                 'desc': nomination_desc,
                 'link': nomination_link,
             }
+            #
+            # if response.xpath("//*[contains(text(), 'angla')]"):
+            #     print(n)
+            #     print(response.xpath("//*[contains(text(), 'angla')]"))
 
 
             yield scrapy.Request(url=self.BASE_URL+nomination_link,
-                                 callback=self.parse_subpage,
-                                 meta={'nomination': n})
+                                     callback=self.parse_subpage,
+                                     meta={'nomination': n})
 
             # print("=======")
             # print(nomination_title, nomination_desc, nomination_link, )
@@ -45,8 +50,14 @@ class LawsSpider(scrapy.Spider):
         new_nom = response.request.meta['nomination']
         country = response.css('fieldset > ul > li > span').xpath('text()').get().strip()
         new_nom['country'] = country
-        # print(country)
+
         yield new_nom
+        # if response.xpath("//*[contains(text(), 'angla')]"):
+        #     print(new_nom)
+        #     print(response.xpath("//*[contains(text(), 'angla')]"))
+
+
+    # print(country)
 
 
 
